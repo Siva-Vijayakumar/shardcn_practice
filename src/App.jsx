@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import { Button } from "./components/ui/button.jsx";
 import { Input } from "./components/ui/input";
@@ -8,7 +8,6 @@ import CartPage from "./components/CartPage";
 import Header from "./components/Header";
 import Hero from "./components/Hero";
 import { useTheme } from "./components/theme-provider";
-import AnimatedBackground from "./components/AnimatedBackground";
 
 function App() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -26,7 +25,6 @@ function App() {
   return (
     <Router>
       <div className="relative min-h-screen">
-        <AnimatedBackground theme={theme} />
         <div className="container mx-auto p-4 relative z-10">
           <Header />
           <nav className="flex justify-between items-center mb-8">
@@ -70,9 +68,99 @@ function App() {
             </Routes>
           </main>
         </div>
+        <AnimatedBackground theme={theme} />
       </div>
     </Router>
   );
 }
+
+const AnimatedBackground = ({ theme }) => {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    let animationFrameId;
+
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    };
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    const colorPalettes = {
+      light: [
+        '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8',
+        '#F7DC6F', '#82E0AA', '#D7BDE2', '#FAD7A0', '#FF9FF3'
+      ],
+      dark: [
+        '#FF6B6B', '#4ECDC4', '#45B7D1', '#FFA07A', '#98D8C8',
+        '#F7DC6F', '#82E0AA', '#D7BDE2', '#FAD7A0', '#FF9FF3'
+      ]
+    };
+
+    const blobs = [];
+    const blobCount = 5;
+
+    for (let i = 0; i < blobCount; i++) {
+      blobs.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        radius: Math.random() * 200 + 100,
+        xSpeed: Math.random() * 2 - 1,
+        ySpeed: Math.random() * 2 - 1,
+        color: colorPalettes[theme][Math.floor(Math.random() * colorPalettes[theme].length)],
+      });
+    }
+
+    const drawBlob = (x, y, radius, color) => {
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+    };
+
+    const animate = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Create gradient background
+      const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+      gradient.addColorStop(0, theme === 'dark' ? '#1a1a2e' : '#f0f0f0');
+      gradient.addColorStop(1, theme === 'dark' ? '#16213e' : '#e0e0e0');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      blobs.forEach((blob) => {
+        blob.x += blob.xSpeed;
+        blob.y += blob.ySpeed;
+
+        if (blob.x < -blob.radius || blob.x > canvas.width + blob.radius) blob.xSpeed *= -1;
+        if (blob.y < -blob.radius || blob.y > canvas.height + blob.radius) blob.ySpeed *= -1;
+
+        drawBlob(blob.x, blob.y, blob.radius, blob.color);
+      });
+
+      ctx.globalCompositeOperation = 'screen';
+
+      animationFrameId = requestAnimationFrame(animate);
+    };
+
+    animate();
+
+    return () => {
+      window.removeEventListener('resize', resizeCanvas);
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [theme]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      className="fixed top-0 left-0 w-full h-full pointer-events-none z-0"
+    />
+  );
+};
 
 export default App;
