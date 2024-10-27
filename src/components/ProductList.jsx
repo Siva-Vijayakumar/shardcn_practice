@@ -10,6 +10,12 @@ const products = [
   { id: 4, name: "Smartwatch", price: 299, image: "https://picsum.photos/id/4/300/200", description: "Track your fitness and stay connected on the go." },
   { id: 5, name: "Camera", price: 499, image: "https://picsum.photos/id/5/300/200", description: "Capture life's moments in stunning detail." },
   { id: 6, name: "Tablet", price: 399, image: "https://picsum.photos/id/6/300/200", description: "Versatile tablet for productivity and entertainment." },
+  { id: 7, name: "Gaming Console", price: 499, image: "https://picsum.photos/id/7/300/200", description: "Next-gen gaming console for immersive gameplay." },
+  { id: 8, name: "Smart Speaker", price: 99, image: "https://picsum.photos/id/8/300/200", description: "Voice-controlled speaker with AI assistant." },
+  { id: 9, name: "Fitness Tracker", price: 79, image: "https://picsum.photos/id/9/300/200", description: "Monitor your health and fitness goals." },
+  { id: 10, name: "Wireless Earbuds", price: 159, image: "https://picsum.photos/id/10/300/200", description: "True wireless earbuds with premium sound." },
+  { id: 11, name: "4K TV", price: 799, image: "https://picsum.photos/id/11/300/200", description: "Ultra HD smart TV for cinematic experiences." },
+  { id: 12, name: "Electric Scooter", price: 349, image: "https://picsum.photos/id/12/300/200", description: "Eco-friendly electric scooter for urban commuting." },
 ];
 
 const ProductList = ({ searchTerm, addToCart }) => {
@@ -24,7 +30,7 @@ const ProductList = ({ searchTerm, addToCart }) => {
   }, [searchTerm]);
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       {filteredProducts.map((product) => (
         <motion.div
           key={product.id}
